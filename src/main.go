@@ -29,6 +29,13 @@ func main() {
 		logger.Error("InPath does net Exist! ")
 		return
 	}
+	if !osxu.IsExist(cfg.OutPath) { //输出路径不存在，创建
+		err := os.MkdirAll(cfg.OutPath, os.ModePerm)
+		if nil != err {
+			logger.Error("OutPath Error! ")
+			return
+		}
+	}
 	handle := func(filePath string) {
 		_, fileName := osxu.SplitFilePath(filePath)
 		baseName, extName := osxu.SplitFileName(fileName)
@@ -44,9 +51,12 @@ func main() {
 			newImg, _ := lib.ResizeImage(img, uint(size), uint(size))
 			sizeStr := strconv.Itoa(size)
 			fileName := fmt.Sprintf("%s_%sx%s.%s", baseName, sizeStr, sizeStr, fm)
-			lib.SaveImage(newImg, cfg.OutPath+fileName, lib.ImageFormat(fm), &jpeg.Options{Quality: cfg.OutRatio})
+			fileFullPath := cfg.OutPath + fileName
+			lib.SaveImage(newImg, fileFullPath, lib.ImageFormat(fm), &jpeg.Options{Quality: cfg.OutRatio})
+			logger.Infoln("IconGen Gen Image:", fileFullPath)
 		}
 	}
+	logger.Infoln("IconGen Start...")
 	if !osxu.IsFolder(cfg.InPath) {
 		handle(cfg.InPath)
 	} else {
@@ -65,4 +75,5 @@ func main() {
 			handle(file.FullPath())
 		}
 	}
+	logger.Infoln("IconGen Finish.")
 }
