@@ -12,7 +12,6 @@ import (
 	"github.com/xuzhuoxi/infra-go/logx"
 	"github.com/xuzhuoxi/infra-go/osxu"
 	"os"
-	"strconv"
 	"fmt"
 	"image/jpeg"
 )
@@ -48,9 +47,8 @@ func main() {
 			fm = extName
 		}
 		for _, size := range cfg.OutSizes {
-			newImg, _ := lib.ResizeImage(img, uint(size), uint(size))
-			sizeStr := strconv.Itoa(size)
-			fileName := fmt.Sprintf("%s_%sx%s.%s", baseName, sizeStr, sizeStr, fm)
+			newImg, _ := lib.ResizeImage(img, uint(size.Width), uint(size.Height))
+			fileName := fmt.Sprintf("%s_%dx%d.%s", baseName, size.Width, size.Height, fm)
 			fileFullPath := cfg.OutPath + fileName
 			lib.SaveImage(newImg, fileFullPath, lib.ImageFormat(fm), &jpeg.Options{Quality: cfg.OutRatio})
 			logger.Infoln("IconGen Gen Image:", fileFullPath)
