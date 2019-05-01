@@ -39,7 +39,7 @@ Goto <a href="#Command Line">Command Line Description</a>.
 Supportted command line parameters as follow:
 
 | -       | -            | -                                                            |
-| ------- | ------------ | ------------------------------------------------------------ |
+| :------ | :----------- | ------------------------------------------------------------ |
 | -size   | **required** | The size of the generated image.                             |
 | -base   | optional     | Custom base running folder for each path in the command. Use Execution file directory if no setting. |
 | -in     | optional     | Custom source folder or file. Use -base value if no setting. |
