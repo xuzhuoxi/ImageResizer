@@ -36,15 +36,16 @@ Goto <a href="#Command Line">Command Line Description</a>.
 
 ### Command Line
 
-Suportted command line parameters as follow:
+Supportted command line parameters as follow:
 
--size|**required**|The size of the generated image.
--|-|:--
--base|optional|Custom base running folder for each path in the command. Use Execution file directory if no setting.
--in|optional|Custom source folder or file. Use -base value if no setting.
--out|optional|Custom output folder. Use -base value if no setting.
--format|optional|The format of the generated image. Supported as follows: png, jpg, jpeg, jps
--ratio|optional|The quality of the generated image. Supported for jpg,jpeg,jps.
+| -       | -            | -                                                            |
+| ------- | ------------ | ------------------------------------------------------------ |
+| -size   | **required** | The size of the generated image.                             |
+| -base   | optional     | Custom base running folder for each path in the command. Use Execution file directory if no setting. |
+| -in     | optional     | Custom source folder or file. Use -base value if no setting. |
+| -out    | optional     | Custom output folder. Use -base value if no setting.         |
+| -format | optional     | The format of the generated image. Supported as follows: png, jpg, jpeg, jps |
+| -ratio  | optional     | The quality of the generated image. Supported for jpg,jpeg,jps. |
 
 E.g.:
 
