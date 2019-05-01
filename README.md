@@ -1,11 +1,14 @@
 # IconGen
 IconGen can be used to Generate icons of different sizes or reduce image size.
 
+## Compatibility
+go1.11
+
 ## Getting Started
 
 ### Download Release
 
-- Download the release [here]().
+- Download the release [here](https://github.com/xuzhuoxi/IconGen/releases).
 
 - Download the repository:
 
@@ -29,7 +32,7 @@ You can modify the construction file([build.sh](/build/build.sh)) to achieve wha
 
 The running command is consistent of all platforms.
 
-Goto [Command Line Description](#Command Line).
+Goto <a href="#Command Line">Command Line Description</a>.
 
 ### Command Line
 
@@ -70,7 +73,10 @@ E.g.:
 - goxc [https://github.com/laher/goxc](https://github.com/laher/goxc) 
 
 ## Contact
-xuzhuoxi [@xuzhuoxi](xuzhuoxi@gmail.com)
+
+xuzhuoxi 
+
+<xuzhuoxi@gmail.com> or <mailxuzhuoxi@163.com>
 
 ## License
 IconGen source code is available under the MIT [License](/LICENSE).
