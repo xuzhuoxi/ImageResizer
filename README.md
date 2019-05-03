@@ -32,7 +32,7 @@ You can modify the construction file([build.sh](/build/build.sh)) to achieve wha
 
 The running command is consistent of all platforms.
 
-Goto <a href="#Command Line">Command Line Description</a>.
+Goto <a href="#command-line">Command Line Description</a>.
 
 ### Command Line
 
