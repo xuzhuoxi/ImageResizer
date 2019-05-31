@@ -11,6 +11,7 @@ import (
 	"errors"
 	"strings"
 	"strconv"
+	"github.com/xuzhuoxi/infra-go/imagex/formatx"
 )
 
 type Size struct {
@@ -108,7 +109,7 @@ func ParseFlag() (cfg *Config, err error) {
 		}
 	}
 	OutFormat := *format
-	if "" != OutFormat && !CheckFormat(OutFormat) {
+	if "" != OutFormat && !formatx.CheckFormatRegistered(OutFormat) {
 		return nil, errors.New("Format Define Error: " + OutFormat)
 	}
 	OutRatio := *ratio

@@ -7,13 +7,14 @@ package main
 
 import (
 	"github.com/xuzhuoxi/IconGen/src/lib"
-	_ "github.com/xuzhuoxi/IconGen/src/lib/png"
-	_ "github.com/xuzhuoxi/IconGen/src/lib/jpeg"
 	"github.com/xuzhuoxi/infra-go/logx"
 	"github.com/xuzhuoxi/infra-go/osxu"
 	"os"
 	"fmt"
 	"image/jpeg"
+	"github.com/xuzhuoxi/infra-go/imagex/formatx"
+	_ "github.com/xuzhuoxi/infra-go/imagex/formatx/pngx"
+	_ "github.com/xuzhuoxi/infra-go/imagex/formatx/jpegx"
 )
 
 func main() {
@@ -50,7 +51,7 @@ func main() {
 			newImg, _ := lib.ResizeImage(img, uint(size.Width), uint(size.Height))
 			fileName := fmt.Sprintf("%s_%dx%d.%s", baseName, size.Width, size.Height, fm)
 			fileFullPath := cfg.OutPath + fileName
-			lib.SaveImage(newImg, fileFullPath, lib.ImageFormat(fm), &jpeg.Options{Quality: cfg.OutRatio})
+			lib.SaveImage(newImg, fileFullPath, formatx.ImageFormat(fm), &jpeg.Options{Quality: cfg.OutRatio})
 			logger.Infoln("IconGen Gen Image:", fileFullPath)
 		}
 	}
@@ -60,7 +61,7 @@ func main() {
 	} else {
 		list, err := osxu.GetFolderFileList(cfg.InPath, false, func(fileInfo os.FileInfo) bool {
 			extName := osxu.GetExtensionName(fileInfo.Name())
-			if !lib.CheckFormat(extName) {
+			if !formatx.CheckFormatRegistered(extName) {
 				return false
 			}
 			return true

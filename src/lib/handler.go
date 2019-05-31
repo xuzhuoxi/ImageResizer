@@ -6,9 +6,10 @@
 package lib
 
 import (
-	"os"
 	"image"
-	"github.com/nfnt/resize"
+	"github.com/xuzhuoxi/infra-go/imagex"
+	"github.com/xuzhuoxi/infra-go/imagex/formatx"
+	"github.com/xuzhuoxi/infra-go/imagex/resizex"
 )
 
 var defaultHandler = ImageResizeHandler{}
@@ -21,32 +22,26 @@ func ResizeImage(source image.Image, width, height uint) (img image.Image, err e
 	return defaultHandler.ResizeImage(source, width, height)
 }
 
-func SaveImage(img image.Image, fullPath string, format ImageFormat, options interface{}) error {
+func SaveImage(img image.Image, fullPath string, format formatx.ImageFormat, options interface{}) error {
 	return defaultHandler.SaveImage(img, fullPath, format, options)
 }
 
 type IImageResizeHandler interface {
 	LoadImage(fullPath string) (img image.Image, err error)
 	ResizeImage(source image.Image, width, height uint) (img image.Image, err error)
-	SaveImage(img image.Image, fullPath string, format ImageFormat, options interface{}) error
+	SaveImage(img image.Image, fullPath string, format formatx.ImageFormat, options interface{}) error
 }
 
 type ImageResizeHandler struct{}
 
 func (h *ImageResizeHandler) LoadImage(fullPath string) (img image.Image, err error) {
-	file, _ := os.Open(fullPath)
-	defer file.Close()
-	img, _, err = image.Decode(file)
-	return
+	return imagex.LoadImage(fullPath, "")
 }
 
 func (h *ImageResizeHandler) ResizeImage(source image.Image, width, height uint) (img image.Image, err error) {
-	return resize.Resize(width, height, source, resize.Lanczos3), nil
+	return resizex.ResizeImage(source, width, height)
 }
 
-func (h *ImageResizeHandler) SaveImage(img image.Image, fullPath string, format ImageFormat, options interface{}) error {
-	os.Open(fullPath)
-	file, _ := os.Create(fullPath)
-	defer file.Close()
-	return format.Encode(file, img, options)
+func (h *ImageResizeHandler) SaveImage(img image.Image, fullPath string, format formatx.ImageFormat, options interface{}) error {
+	return imagex.SaveImage(img, fullPath, format, options)
 }
