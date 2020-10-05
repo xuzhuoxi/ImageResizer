@@ -6,12 +6,13 @@
 package lib
 
 import (
-	"flag"
-	"github.com/xuzhuoxi/infra-go/osxu"
 	"errors"
-	"strings"
-	"strconv"
+	"flag"
+	"github.com/xuzhuoxi/infra-go/filex"
 	"github.com/xuzhuoxi/infra-go/imagex/formatx"
+	"github.com/xuzhuoxi/infra-go/osxu"
+	"strconv"
+	"strings"
 )
 
 type Size struct {
@@ -44,6 +45,8 @@ type Config struct {
 	OutRatio int
 }
 
+var RunningDir = osxu.GetRunningDir()
+
 // -base 	可选	自定义基目录	字符串路径，文件夹或文件,"./"开头视为相对路径
 // -size 	必选	输出大小		[整数/宽x高],...
 // -in 		可选	输入			字符串路径，文件夹或文件,"./"开头视为相对路径
@@ -64,19 +67,19 @@ func ParseFlag() (cfg *Config, err error) {
 	}
 	BasePath := *base
 	if "" == BasePath || "." == BasePath || "./" == BasePath {
-		BasePath = osxu.RunningBaseDir()
+		BasePath = RunningDir
 	} else if strings.Index(BasePath, "./") == 0 {
-		BasePath = osxu.RunningBaseDir() + BasePath
+		BasePath = filex.Combine(RunningDir, BasePath)
 	}
-	InPath := osxu.FormatDirPath(*in)
+	InPath := filex.FormatDirPath(*in)
 	if "" == InPath || strings.Index(InPath, "./") == 0 {
-		InPath = BasePath + InPath
+		InPath = filex.Combine(BasePath, InPath)
 	}
-	OutPath := osxu.FormatDirPath(*out)
+	OutPath := filex.FormatDirPath(*out)
 	if "" == InPath || strings.Index(OutPath, "./") == 0 {
-		OutPath = BasePath + OutPath
+		OutPath = filex.Combine(BasePath, OutPath)
 	}
-	if osxu.IsExist(OutPath) && !osxu.IsFolder(OutPath) {
+	if filex.IsExist(OutPath) && !filex.IsFolder(OutPath) {
 		return nil, errors.New("Out Config Error! ")
 	}
 	sizes := strings.Split(*size, ",")
