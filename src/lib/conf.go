@@ -71,11 +71,11 @@ func ParseFlag() (cfg *Config, err error) {
 	} else if strings.Index(BasePath, "./") == 0 {
 		BasePath = filex.Combine(RunningDir, BasePath)
 	}
-	InPath := filex.FormatDirPath(*in)
+	InPath := filex.FormatPath(*in)
 	if "" == InPath || strings.Index(InPath, "./") == 0 {
 		InPath = filex.Combine(BasePath, InPath)
 	}
-	OutPath := filex.FormatDirPath(*out)
+	OutPath := filex.FormatPath(*out)
 	if "" == InPath || strings.Index(OutPath, "./") == 0 {
 		OutPath = filex.Combine(BasePath, OutPath)
 	}

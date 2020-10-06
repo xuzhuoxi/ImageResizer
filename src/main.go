@@ -38,7 +38,7 @@ func main() {
 	}
 	handle := func(filePath string) {
 		_, fileName := filex.Split(filePath)
-		baseName, extName := filex.SplitFileName(fileName, false)
+		baseName, _, extName := filex.SplitFileName(fileName)
 		img, err := lib.LoadImage(filePath)
 		if nil != err {
 			return
@@ -60,7 +60,7 @@ func main() {
 		handle(cfg.InPath)
 	} else {
 		var list []string
-		err := filex.WalkCurrent(cfg.InPath, func(path string, info os.FileInfo, err error) error {
+		err := filex.WalkInDir(cfg.InPath, func(path string, info os.FileInfo, err error) error {
 			if info.IsDir() {
 				return nil
 			}
