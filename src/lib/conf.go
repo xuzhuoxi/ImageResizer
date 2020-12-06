@@ -8,6 +8,7 @@ package lib
 import (
 	"errors"
 	"flag"
+	"fmt"
 	"github.com/xuzhuoxi/infra-go/filex"
 	"github.com/xuzhuoxi/infra-go/imagex/formatx"
 	"github.com/xuzhuoxi/infra-go/osxu"
@@ -26,12 +27,18 @@ type Config struct {
 	// 基础目录，用于拼接相对路径
 	// 如果当前为 空 或 "." 或 "./",则使用运行时路径
 	BasePath string
+
 	// 来源地址，文件夹或文件
 	// 如果是文件夹，处理当层全部合法文件
 	// 合法性：类型支持,大小支持(长宽)
 	InPath string
-	// 来源地址，文件夹
+	// 来源地址是否为文件夹
+	InFolder bool
+
+	// 输出地址，文件夹
 	OutPath string
+	// 输出地址是否为文件夹
+	OutFolder bool
 
 	// 输出大小
 	OutSizes []Size
@@ -45,18 +52,27 @@ type Config struct {
 	OutRatio int
 }
 
+func (cfg *Config) String() string {
+	return fmt.Sprintf("Config{\nBasePath=%s,\nInPath=%s,\nOutPath=%s,\nOutSize=%s,\nOutFormat=%s,\nOutRatio=%d}",
+		cfg.BasePath, cfg.InPath, cfg.OutPath, fmt.Sprint(cfg.OutSizes), cfg.OutFormat, cfg.OutRatio)
+}
+
 var RunningDir = osxu.GetRunningDir()
 
-// -base 	可选	自定义基目录	字符串路径，文件夹或文件,"./"开头视为相对路径
-// -size 	必选	输出大小		[整数/宽x高],...
-// -in 		可选	输入			字符串路径，文件夹或文件,"./"开头视为相对路径
-// -out 	可选	输出			字符串路径，文件夹,"./"开头视为相对路径
-// -format 	可选	输出文件格式	图像格式[pngx,jpeg,gifx,jpg]
-// -ratio 	可选	压缩比			整数(0,100]
+// -base 		可选	自定义基目录				字符串路径，文件夹或文件,"./"开头视为相对路径
+// -size 		必选	输出大小					[整数/宽x高],...
+// -in 			可选	来源地址					字符串路径，文件夹或文件,"./"开头视为相对路径
+// -inFolder 	可选	来源地址是否为文件夹		字符串路径，文件夹或文件,"./"开头视为相对路径
+// -out 		可选	输出地址					字符串路径，文件夹,"./"开头视为相对路径
+// -inFolder 	可选	输出地址是否为文件夹		字符串路径，文件夹或文件,"./"开头视为相对路径
+// -format 		可选	输出文件格式				图像格式[pngx,jpeg,gifx,jpg]
+// -ratio 		可选	压缩比					整数(0,100]
 func ParseFlag() (cfg *Config, err error) {
-	base := flag.String("base", "", "Input Path! ")
+	base := flag.String("base", "", "Base Path! ")
 	in := flag.String("in", "", "Input Path! ")
+	inFolder := flag.Bool("inFolder", true, "Input is Folder? ")
 	out := flag.String("out", "", "Output Path! ")
+	outFolder := flag.Bool("outFolder", true, "Output is Folder? ")
 	size := flag.String("size", "", "Size Config!")
 	format := flag.String("format", "", "Format Config!")
 	ratio := flag.Int("ratio", 75, "Ratio Config!")
@@ -116,5 +132,8 @@ func ParseFlag() (cfg *Config, err error) {
 		return nil, errors.New("Format Define Error: " + OutFormat)
 	}
 	OutRatio := *ratio
-	return &Config{InPath: InPath, OutPath: OutPath, OutSizes: OutSizes, OutFormat: OutFormat, OutRatio: OutRatio}, nil
+	return &Config{
+		InPath: InPath, InFolder: *inFolder,
+		OutPath: OutPath, OutFolder: *outFolder,
+		OutSizes: OutSizes, OutFormat: OutFormat, OutRatio: OutRatio}, nil
 }
