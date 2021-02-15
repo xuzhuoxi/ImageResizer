@@ -24,7 +24,7 @@ var (
 )
 
 func file2Size(inFilePath string, outFilePath string, size lib.Size, format string) {
-	img, err := lib.LoadImage(inFilePath)
+	img, _, err := lib.LoadImage(inFilePath)
 	if nil != err {
 		return
 	}

@@ -6,15 +6,15 @@
 package lib
 
 import (
-	"image"
 	"github.com/xuzhuoxi/infra-go/imagex"
 	"github.com/xuzhuoxi/infra-go/imagex/formatx"
 	"github.com/xuzhuoxi/infra-go/imagex/resizex"
+	"image"
 )
 
 var defaultHandler = ImageResizeHandler{}
 
-func LoadImage(fullPath string) (img image.Image, err error) {
+func LoadImage(fullPath string) (img image.Image, imgFormat string, err error) {
 	return defaultHandler.LoadImage(fullPath)
 }
 
@@ -34,7 +34,7 @@ type IImageResizeHandler interface {
 
 type ImageResizeHandler struct{}
 
-func (h *ImageResizeHandler) LoadImage(fullPath string) (img image.Image, err error) {
+func (h *ImageResizeHandler) LoadImage(fullPath string) (img image.Image, imgFormat string, err error) {
 	return imagex.LoadImage(fullPath, "")
 }
 
