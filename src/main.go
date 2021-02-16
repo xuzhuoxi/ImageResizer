@@ -45,7 +45,7 @@ func file2Sizes(inFilePath string, outFolder string, sizes []lib.Size, format st
 
 func CheckInPath(cfg *lib.Config) bool {
 	if !filex.IsExist(cfg.InPath) {
-		logger.Error("InPath does net Exist:", cfg.InPath)
+		logger.Error("InPath does not Exist:", cfg.InPath)
 		return false
 	}
 	if cfg.InFolder != filex.IsFolder(cfg.InPath) {

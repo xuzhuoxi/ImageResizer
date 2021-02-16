@@ -92,7 +92,7 @@ func ParseFlag() (cfg *Config, err error) {
 		InPath = filex.Combine(BasePath, InPath)
 	}
 	OutPath := filex.FormatPath(*out)
-	if "" == InPath || strings.Index(OutPath, "./") == 0 {
+	if "" == OutPath || strings.Index(OutPath, "./") == 0 {
 		OutPath = filex.Combine(BasePath, OutPath)
 	}
 	if filex.IsExist(OutPath) && !filex.IsFolder(OutPath) {
