@@ -7,12 +7,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/viphxin/xingo/logger"
-	"github.com/xuzhuoxi/IconGen/src/lib"
+	"github.com/xuzhuoxi/ImageResizer/src/lib"
 	"github.com/xuzhuoxi/infra-go/filex"
 	"github.com/xuzhuoxi/infra-go/imagex/formatx"
-	_ "github.com/xuzhuoxi/infra-go/imagex/formatx/jpegx"
-	_ "github.com/xuzhuoxi/infra-go/imagex/formatx/pngx"
 	"github.com/xuzhuoxi/infra-go/logx"
 	"image/jpeg"
 	"os"
@@ -45,12 +42,11 @@ func file2Sizes(inFilePath string, outFolder string, sizes []lib.Size, format st
 
 func CheckInPath(cfg *lib.Config) bool {
 	if !filex.IsExist(cfg.InPath) {
-		logger.Error("InPath does not Exist:", cfg.InPath)
+		logx.Error("InPath does not Exist:", cfg.InPath)
 		return false
 	}
 	if cfg.InFolder != filex.IsFolder(cfg.InPath) {
-		logger.Error(
-			fmt.Sprintf("Contradiction between InPath(%s) and InFolder(%v)", cfg.InPath, cfg.InFolder))
+		logx.Error(fmt.Sprintf("Contradiction between InPath(%s) and InFolder(%v)", cfg.InPath, cfg.InFolder))
 		return false
 	}
 	return true
@@ -59,7 +55,7 @@ func CheckInPath(cfg *lib.Config) bool {
 func CheckOutPath(cfg *lib.Config) bool {
 	if filex.IsExist(cfg.OutPath) {
 		if cfg.OutFolder != filex.IsFolder(cfg.OutPath) {
-			logger.Error(
+			logx.Error(
 				fmt.Sprintf("Contradiction between OutPath(%s) and OutFolder(%v)", cfg.OutPath, cfg.OutFolder))
 			return false
 		}
@@ -68,14 +64,14 @@ func CheckOutPath(cfg *lib.Config) bool {
 	if cfg.OutFolder {
 		err := os.MkdirAll(cfg.OutPath, os.ModePerm)
 		if nil != err {
-			logger.Error("Init OutPath Folder Error! ", err.Error())
+			logx.Error("Init OutPath Folder Error! ", err.Error())
 			return false
 		}
 	} else {
 		dir, _ := filex.Split(cfg.OutPath)
 		err := os.MkdirAll(dir, os.ModePerm)
 		if nil != err {
-			logger.Error("Init OutPath Folder Error! ", err.Error())
+			logx.Error("Init OutPath Folder Error! ", err.Error())
 			return false
 		}
 	}
@@ -84,7 +80,7 @@ func CheckOutPath(cfg *lib.Config) bool {
 
 func CheckPath(cfg *lib.Config) bool {
 	if cfg.InFolder && !cfg.OutFolder {
-		logger.Error(
+		logx.Error(
 			fmt.Sprintf("Contradiction between InFolder(%v) and OutFolder(%v)", cfg.InFolder, cfg.OutFolder))
 		return false
 	}
@@ -93,7 +89,7 @@ func CheckPath(cfg *lib.Config) bool {
 
 func CheckSize(cfg *lib.Config) bool {
 	if !cfg.OutFolder && len(cfg.OutSizes) != 1 {
-		logger.Error(
+		logx.Error(
 			fmt.Sprintf("Contradiction between OutFolder(%v) and Size's Len(%d)", cfg.OutFolder, len(cfg.OutSizes)))
 		return false
 	}
@@ -106,7 +102,7 @@ func main() {
 
 	cfg, err := lib.ParseFlag()
 	if err != nil {
-		logger.Error(err)
+		logx.Error(err)
 		return
 	}
 	globalOutRatio = cfg.OutRatio
@@ -154,7 +150,7 @@ func main() {
 		return nil
 	})
 	if nil != err {
-		logger.Error(err)
+		logx.Error(err)
 		return
 	}
 	for _, file := range list {
