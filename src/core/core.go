@@ -4,8 +4,8 @@ package core
 
 import (
 	"github.com/xuzhuoxi/infra-go/imagex/formatx"
+	"github.com/xuzhuoxi/infra-go/imagex/formatx/jpegx"
 	"github.com/xuzhuoxi/infra-go/logx"
-	"image/jpeg"
 )
 
 var (
@@ -35,5 +35,5 @@ func GetOptions(format formatx.ImageFormat, ratio int) interface{} {
 	if formatx.Auto == format {
 		return nil
 	}
-	return &jpeg.Options{Quality: ratio}
+	return jpegx.NewJpegOptions(ratio)
 }

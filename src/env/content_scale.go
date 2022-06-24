@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/xuzhuoxi/infra-go/filex"
+	"github.com/xuzhuoxi/infra-go/imagex/formatx"
 	"github.com/xuzhuoxi/infra-go/slicex"
 	"strconv"
 	"strings"
@@ -82,7 +83,7 @@ func (c *ScaleContext) CheckIncludeFile(filePath string) bool {
 
 func (c *ScaleContext) GetOutPath(source string, targetDir string, scale float64, format string) string {
 	fileName, _, _ := filex.SplitFileName(source)
-	newFileName := fmt.Sprintf("%s_x%.1f.%s", fileName, scale, format)
+	newFileName := fmt.Sprintf("%s@%gx.%s", fileName, scale, formatx.GetExtName(format))
 	return filex.Combine(targetDir, newFileName)
 }
 
