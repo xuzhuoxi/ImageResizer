@@ -9,13 +9,14 @@ import (
 	"strings"
 )
 
-func NewScaleContext(env string, source, target string, scale string, oneByOne bool, format string, ratio int) *ScaleContext {
-	return &ScaleContext{envPath: env, source: source, target: target, scale: scale, oneByOne: oneByOne,
+func NewScaleContext(env string, include string, source, target string, scale string, oneByOne bool, format string, ratio int) *ScaleContext {
+	return &ScaleContext{envPath: env, include: include, source: source, target: target, scale: scale, oneByOne: oneByOne,
 		format: format, ratio: ratio}
 }
 
 type ScaleContext struct {
 	envPath  string
+	include  string
 	source   string
 	target   string
 	scale    string
@@ -24,8 +25,13 @@ type ScaleContext struct {
 	format string
 	ratio  int
 
-	sourceList []string
-	scaleList  []float64
+	subIncludes []string
+	sourceList  []string
+	scaleList   []float64
+}
+
+func (c *ScaleContext) String() string {
+	return fmt.Sprintf("{Env=%s, One=%t, SrcLen=%d, ScaleLen=%d}", c.envPath, c.oneByOne, len(c.sourceList), len(c.scaleList))
 }
 
 func (c *ScaleContext) Mode() ResizeMode {
@@ -40,6 +46,18 @@ func (c *ScaleContext) OneByOne() bool {
 	return c.oneByOne
 }
 
+func (c *ScaleContext) Format() string {
+	return c.format
+}
+
+func (c *ScaleContext) Ratio() int {
+	return c.ratio
+}
+
+func (c *ScaleContext) Target() string {
+	return c.target
+}
+
 func (c *ScaleContext) FirstSource() string {
 	return c.sourceList[0]
 }
@@ -48,33 +66,43 @@ func (c *ScaleContext) SourceList() []string {
 	return slicex.CopyString(c.sourceList)
 }
 
+func (c *ScaleContext) FirstScale() float64 {
+	return c.scaleList[0]
+}
+
 func (c *ScaleContext) ScaleList() []float64 {
 	rs := make([]float64, len(c.scaleList))
 	copy(rs, c.scaleList)
 	return rs
 }
 
-func (c *ScaleContext) GetOutPath(source string, targetDir string, scale float64) string {
-	fileName, _, ext := filex.SplitFileName(source)
-	newFileName := fmt.Sprintf("%s_x{%f}.{%s}", fileName, scale, ext)
+func (c *ScaleContext) CheckIncludeFile(filePath string) bool {
+	return checkFileExt(filePath, c.subIncludes)
+}
+
+func (c *ScaleContext) GetOutPath(source string, targetDir string, scale float64, format string) string {
+	fileName, _, _ := filex.SplitFileName(source)
+	newFileName := fmt.Sprintf("%s_x%.1f.%s", fileName, scale, format)
 	return filex.Combine(targetDir, newFileName)
 }
 
 func (c *ScaleContext) InitContext() error {
+	c.initInclude()
 	if err := c.initSource(); nil != err {
 		return err
 	}
-	if c.target == "" {
-		return errors.New(fmt.Sprintf("Mode[scale] tar lack! "))
-	}
-	if err := CheckFormat(c.format, c.ratio); nil != err {
-		return errors.New(fmt.Sprintf("Mode[scale] %s", err))
+	if err := c.initTarget(); nil != err {
+		return err
 	}
 	c.ratio = c.getRatio()
 	if err := c.initScale(); nil != err {
 		return err
 	}
 	return nil
+}
+
+func (c *ScaleContext) initInclude() {
+	c.subIncludes = strings.Split(c.include, ParamsSep)
 }
 
 func (c *ScaleContext) initSource() error {
@@ -94,6 +122,14 @@ func (c *ScaleContext) initSource() error {
 		return err
 	}
 	c.sourceList = list
+	return nil
+}
+
+func (c *ScaleContext) initTarget() error {
+	if c.target == "" {
+		return errors.New(fmt.Sprintf("Mode[scale] tar lack! "))
+	}
+	c.target = filex.Combine(c.envPath, c.target)
 	return nil
 }
 

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/xuzhuoxi/infra-go/filex"
+	"github.com/xuzhuoxi/infra-go/slicex"
 	"strings"
 )
 
@@ -27,16 +28,6 @@ const (
 	ModeScale = "scale"
 	ModeSize  = "size"
 )
-
-type ResizeContext interface {
-	InitContext() error
-	Mode() ResizeMode
-	EnvPath() string
-}
-
-func CheckFormat(format string, ratio int) error {
-	return nil
-}
 
 func GetRatio(firstRatio int, ratio ...int) int {
 	if firstRatio != 0 {
@@ -74,4 +65,13 @@ func handleSourcePath(source string, envPath string) (newSource string, err erro
 		return newPath, nil
 	}
 	return "", errors.New(fmt.Sprintf("source is not exist at [%s]! ", source))
+}
+
+func checkFileExt(filePath string, includes []string) bool {
+	if len(includes) == 0 {
+		return false
+	}
+	ext := filex.GetExtWithoutDot(filePath)
+	ext = strings.ToLower(ext)
+	return slicex.ContainsString(includes, ext)
 }

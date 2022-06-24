@@ -3,7 +3,7 @@ package env
 import (
 	"errors"
 	"fmt"
-	"github.com/xuzhuoxi/ImageResizer/src/util"
+	"github.com/xuzhuoxi/ImageResizer/src/lib"
 	"github.com/xuzhuoxi/infra-go/filex"
 	"strings"
 )
@@ -80,7 +80,7 @@ func (c *IconContext) InitContext() error {
 		path = filex.Combine(c.envPath, c.cfgPath)
 	}
 	cfg := &IconCfg{}
-	err := util.UnmarshalYamlData(path, cfg)
+	err := lib.UnmarshalYamlData(path, cfg)
 	c.cfg = cfg
 	if nil != err {
 		return err

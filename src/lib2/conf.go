@@ -3,7 +3,7 @@
 //on 2019-04-26.
 //@author xuzhuoxi
 //
-package lib
+package lib2
 
 import (
 	"errors"
