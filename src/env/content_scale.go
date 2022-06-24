@@ -95,7 +95,7 @@ func (c *ScaleContext) InitContext() error {
 	if err := c.initTarget(); nil != err {
 		return err
 	}
-	c.ratio = c.getRatio()
+	c.ratio = GetRatio(c.ratio)
 	if err := c.initScale(); nil != err {
 		return err
 	}
@@ -113,14 +113,14 @@ func (c *ScaleContext) initSource() error {
 	if c.oneByOne {
 		source, err := handleSourcePath(c.source, c.envPath)
 		if nil != err {
-			return err
+			return errors.New(fmt.Sprintf("Mode[scale] %s", err))
 		}
 		c.sourceList = []string{source}
 		return nil
 	}
 	list, err := handleSourceList(c.source, c.envPath)
 	if nil != err {
-		return err
+		return errors.New(fmt.Sprintf("Mode[scale] %s", err))
 	}
 	c.sourceList = list
 	return nil
@@ -148,8 +148,4 @@ func (c *ScaleContext) initScale() error {
 		c.scaleList = append(c.scaleList, f)
 	}
 	return nil
-}
-
-func (c *ScaleContext) getRatio() int {
-	return GetRatio(c.ratio)
 }

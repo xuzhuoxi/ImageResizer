@@ -100,7 +100,7 @@ func (c *SizeContext) InitContext() error {
 	if err := c.initTarget(); nil != err {
 		return err
 	}
-	c.ratio = c.getRatio()
+	c.ratio = GetRatio(c.ratio)
 	if err := c.initSize(); nil != err {
 		return err
 	}
@@ -118,14 +118,14 @@ func (c *SizeContext) initSource() error {
 	if c.oneByOne {
 		source, err := handleSourcePath(c.source, c.envPath)
 		if nil != err {
-			return err
+			return errors.New(fmt.Sprintf("Mode[size] %s", err))
 		}
 		c.sourceList = []string{source}
 		return nil
 	}
 	list, err := handleSourceList(c.source, c.envPath)
 	if nil != err {
-		return err
+		return errors.New(fmt.Sprintf("Mode[size] %s", err))
 	}
 	c.sourceList = list
 	return nil
@@ -177,8 +177,4 @@ func (c *SizeContext) parseSize(sizeStr string) (size ImageSize, err error) {
 		return ImageSize{}, errors.New(fmt.Sprintf("Mode[size] size format error at Height[%s]! ", err))
 	}
 	return ImageSize{Width: uint(l), Height: uint(l)}, nil
-}
-
-func (c *SizeContext) getRatio() int {
-	return GetRatio(c.ratio)
 }

@@ -9,7 +9,6 @@ import (
 	"github.com/xuzhuoxi/ImageResizer/src/lib"
 	"github.com/xuzhuoxi/infra-go/filex"
 	"image"
-	"image/jpeg"
 	"io/fs"
 	"math"
 )
@@ -26,7 +25,7 @@ func HandleScale(ctx *env.ScaleContext) {
 	} else {
 		defaultScaleHandler.handleImages(ctx)
 	}
-	globalLogger.Infoln(fmt.Sprintf("Resize Finish in Mode[scale]: %v", ctx))
+	globalLogger.Infoln(fmt.Sprintf("Resize Finish in Mode[scale]."))
 }
 
 type scaleHandler struct{}
@@ -34,20 +33,20 @@ type scaleHandler struct{}
 func (h *scaleHandler) handlerOneByOne(ctx *env.ScaleContext) {
 	imgInfo := lib.LoadImage(ctx.FirstSource())
 	if imgInfo.Err != nil {
-		globalLogger.Warnln(fmt.Sprintf("\t[OneByOne.LoadImage] Erryr by[%s]", imgInfo.Err))
+		globalLogger.Warnln(fmt.Sprintf("\t[OneByOne.LoadImage] Error by[%s]", imgInfo.Err))
 		return
 	}
 	scale := ctx.FirstScale()
 	width, height := h.getImageSize(imgInfo.Image, scale)
 	sizeImg, err := lib.ResizeImage(imgInfo.Image, width, height)
 	if err != nil {
-		globalLogger.Warnln(fmt.Sprintf("\t[OneByOne.ResizeImage] Erryr by[%s]", err))
+		globalLogger.Warnln(fmt.Sprintf("\t[OneByOne.ResizeImage] Error by[%s]", err))
 		return
 	}
 	imgFormat := GetFormat(ctx.Format(), imgInfo.Format)
-	err = lib.SaveImage(sizeImg, ctx.Target(), imgFormat, &jpeg.Options{Quality: 75})
+	err = lib.SaveImage(sizeImg, ctx.Target(), imgFormat, GetOptions(imgFormat, ctx.Ratio()))
 	if nil != err {
-		globalLogger.Warnln(fmt.Sprintf("\t[OneByOne.SaveImage] Erryr by[%s]", err))
+		globalLogger.Warnln(fmt.Sprintf("\t[OneByOne.SaveImage] Error by[%s]", err))
 		return
 	}
 	globalLogger.Infoln("\t", ctx.FirstSource()[len(ctx.EnvPath())+1:], "=>", ctx.Target()[len(ctx.EnvPath())+1:])
@@ -84,7 +83,7 @@ func (h *scaleHandler) handleImages(ctx *env.ScaleContext) {
 func (h *scaleHandler) handleImage(ctx *env.ScaleContext, imgPath string) error {
 	imgInfo := lib.LoadImage(imgPath)
 	if imgInfo.Err != nil {
-		return errors.New(fmt.Sprintf("\t[HandleImage.LoadImage] Erryr by[%s][%s]", imgInfo.Err, imgPath))
+		return errors.New(fmt.Sprintf("\t[HandleImage.LoadImage] Error by[%s][%s]", imgInfo.Err, imgPath))
 	}
 	//fmt.Println("sizeHandler.handleImage:", imgPath, imgInfo.Format)
 	for _, scale := range ctx.ScaleList() {
@@ -92,7 +91,7 @@ func (h *scaleHandler) handleImage(ctx *env.ScaleContext, imgPath string) error 
 		width, height := h.getImageSize(imgInfo.Image, scale)
 		sizeImg, err := lib.ResizeImage(imgInfo.Image, width, height)
 		if err != nil {
-			return errors.New(fmt.Sprintf("\t[HandleImage.ResizeImage] Erryr by[%s]", err))
+			return errors.New(fmt.Sprintf("\t[HandleImage.ResizeImage] Error by[%s]", err))
 		}
 		imgFormat := GetFormat(ctx.Format(), imgInfo.Format)
 		path := ctx.GetOutPath(imgInfo.Path, ctx.Target(), scale, string(imgFormat))
@@ -100,7 +99,7 @@ func (h *scaleHandler) handleImage(ctx *env.ScaleContext, imgPath string) error 
 		//fmt.Println("scaleHandler.handleImage2:", imgPath, width, height, path, imgFormat, options)
 		err = lib.SaveImage(sizeImg, path, imgFormat, options)
 		if nil != err {
-			return errors.New(fmt.Sprintf("\t[HandleImage.SaveImage] Erryr by[%s]", err))
+			return errors.New(fmt.Sprintf("\t[HandleImage.SaveImage] Error by[%s]", err))
 		}
 		globalLogger.Infoln("\t", imgPath[len(ctx.EnvPath())+1:], "=>", path[len(ctx.EnvPath())+1:])
 	}

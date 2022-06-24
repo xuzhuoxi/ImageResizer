@@ -22,8 +22,9 @@ type CmdFlags struct {
 }
 
 func (f *CmdFlags) GetContexts() (iconCtx *IconContext, sizeCtc *SizeContext, scaleCtx *ScaleContext, err error) {
+	evnPath, _ := f.getEnvPath()
 	if ModeIcon == f.Mode {
-		ctx := NewIconContext(f.EnvPath, f.CfgPath, f.Source, f.TargetDir, f.Format, f.Ratio)
+		ctx := NewIconContext(evnPath, f.CfgPath, f.Source, f.TargetDir, f.Format, f.Ratio)
 		err = ctx.InitContext()
 		if nil != err {
 			return
@@ -33,7 +34,7 @@ func (f *CmdFlags) GetContexts() (iconCtx *IconContext, sizeCtc *SizeContext, sc
 	}
 	target, oneByOne := f.getTarget()
 	if ModeSize == f.Mode {
-		ctx := NewSizeContext(f.EnvPath, f.Include, f.Source, target, f.Size, oneByOne, f.Format, f.Ratio)
+		ctx := NewSizeContext(evnPath, f.Include, f.Source, target, f.Size, oneByOne, f.Format, f.Ratio)
 		err = ctx.InitContext()
 		if nil != err {
 			return
@@ -42,7 +43,7 @@ func (f *CmdFlags) GetContexts() (iconCtx *IconContext, sizeCtc *SizeContext, sc
 		return
 	}
 	if ModeScale == f.Mode {
-		ctx := NewScaleContext(f.EnvPath, f.Include, f.Source, target, f.Scale, oneByOne, f.Format, f.Ratio)
+		ctx := NewScaleContext(evnPath, f.Include, f.Source, target, f.Scale, oneByOne, f.Format, f.Ratio)
 		err = ctx.InitContext()
 		if nil != err {
 			return
@@ -51,6 +52,17 @@ func (f *CmdFlags) GetContexts() (iconCtx *IconContext, sizeCtc *SizeContext, sc
 		return
 	}
 	return
+}
+
+func (f *CmdFlags) getEnvPath() (evnPath string, isDefault bool) {
+	runningRoot := osxu.GetRunningDir()
+	if "" == f.EnvPath {
+		return runningRoot, true
+	}
+	if filex.IsDir(f.EnvPath) {
+		return f.EnvPath, false
+	}
+	return filex.Combine(runningRoot, f.EnvPath), false
 }
 
 func (f *CmdFlags) getTarget() (target string, oneByOne bool) {
@@ -83,21 +95,8 @@ func ParseFlags() *CmdFlags {
 	ratio := flag.Int("ratio", 0, "Mode[icon|scale|size] Ratio! ")
 
 	flag.Parse()
-
-	env := getEnvPath(*envPath)
-
 	return &CmdFlags{
-		EnvPath: env, Mode: strings.ToLower(*mode), Include: strings.ToLower(*include),
+		EnvPath: *envPath, Mode: strings.ToLower(*mode), Include: strings.ToLower(*include),
 		CfgPath: *cfgPath, Source: *source, TargetDir: *targetDir, TargetFile: *targetFile,
 		Size: strings.ToLower(*size), Scale: *scale, Format: strings.ToLower(*format), Ratio: *ratio}
-}
-
-func getEnvPath(env string) string {
-	runningRoot := osxu.GetRunningDir()
-	if "" == env {
-		env = runningRoot
-	} else if !filex.IsDir(env) {
-		env = filex.Combine(runningRoot, env)
-	}
-	return env
 }
