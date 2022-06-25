@@ -45,17 +45,20 @@ func (s *IconSize) initSize() {
 }
 
 type IconCfg struct {
-	Format string     `yaml:"format"` // 文件格式，空的时候读取源文件扩展名格式
-	Ratio  int        `yaml:"ratio"`  // 品质压缩率
-	List   []IconSize `yaml:"list"`   // 尺寸
+	DefaultName string     `yaml:"default-name"` // 默认名称，用于替换"{{name}}"中内容
+	Format      string     `yaml:"format"`       // 文件格式，空的时候读取源文件扩展名格式
+	Ratio       int        `yaml:"ratio"`        // 品质压缩率
+	List        []IconSize `yaml:"list"`         // 尺寸
 }
 
 func (i *IconCfg) String() string {
 	return fmt.Sprintf("{Format=%s, Ratio=%d, ListLen=%d}", i.Format, i.Ratio, len(i.List))
 }
 
-func NewIconContext(env string, cfg string, source, target string, format string, ratio int) *IconContext {
-	return &IconContext{envPath: env, cfgPath: cfg, source: source, target: target, format: format, ratio: ratio}
+func NewIconContext(env string, cfg string, source string, target string,
+	replaceName string, format string, ratio int) *IconContext {
+	return &IconContext{envPath: env, cfgPath: cfg, source: source, target: target,
+		replaceName: replaceName, format: format, ratio: ratio}
 }
 
 type IconContext struct {
@@ -64,6 +67,9 @@ type IconContext struct {
 
 	source string
 	target string
+
+	replaceName string
+
 	format string
 	ratio  int
 
@@ -109,7 +115,13 @@ func (c *IconContext) Target() string {
 
 func (c *IconContext) GetOutPath(size IconSize, format string) string {
 	extName := formatx.GetExtName(format)
-	fileName := size.Name + "." + extName
+	name := size.Name
+	if "" != c.replaceName {
+		name = strings.ReplaceAll(name, IconNameSubstitute, c.replaceName)
+	} else {
+		name = strings.ReplaceAll(name, IconNameSubstitute, c.cfg.DefaultName)
+	}
+	fileName := name + "." + extName
 	return filex.Combine(c.target, fileName)
 }
 

@@ -8,23 +8,27 @@ import (
 )
 
 type CmdFlags struct {
-	EnvPath    string // [可选]环境目录,其它目录如果使用相对路径，则以这里为基准
-	Mode       string // [*]运行模式
-	Include    string // 要处理的文件扩展名
-	CfgPath    string // [icon*]icon模式下配置文件路径
-	Source     string // [scale*|icon*]字符串路径，文件夹或文件,"./"开头视为相对路径
-	TargetDir  string // [scale*|icon*]字符串目录路径
-	TargetFile string // [scale*|icon*]字符串文件路径
-	Size       string // [size*]输出固定大小,格式：[整数/宽x高],...
-	Scale      string // [scale*]缩放比例,格式：[整数/宽x高],...
-	Format     string // [可选]输出文件格式,图像格式[pngx,jpeg,gifx,jpg]
-	Ratio      int    // [可选]输出文件压缩比，整数(0,100]
+	EnvPath string // 【可选】运行时环境路径，支持绝对路径与相对于当前执行目录的相对路径，空表示使用执行文件所在目录
+	Mode    string // 【必要】执行模式[icon|size|scale]
+
+	CfgPath       string // 【icon必要】配置文件路径
+	Source        string // 【必要】来源文件或目录，支持多个，可用英文逗号","分隔
+	SourceInclude string // 【size,scale可选】当来源包含目录时必要，扩展名过滤，支持多个，可用英文逗号","分隔
+	TargetDir     string // 【size,scale:File与Dir二选一】【icon必要】产出目录，不支持多个
+	TargetFile    string // 【size,scale:File与Dir二选一】产出文件
+	TargetSize    string // 【size必要】产出文件尺寸，支持多个，可用英文逗号","分隔，格式：[整数/宽x高],...
+	TargetScale   string // 【scale必要】产出文件比例，支持多个，可用英文逗号","分隔
+
+	ReplaceName string // 【icon可选】模式下替换名称
+	Format      string // 【可选】指定产出文件格式
+	Ratio       int    // 【可选】指定产出文件质量,整数(0,100]
 }
 
 func (f *CmdFlags) GetContexts() (iconCtx *IconContext, sizeCtc *SizeContext, scaleCtx *ScaleContext, err error) {
 	evnPath, _ := f.getEnvPath()
 	if ModeIcon == f.Mode {
-		ctx := NewIconContext(evnPath, f.CfgPath, f.Source, f.TargetDir, f.Format, f.Ratio)
+		ctx := NewIconContext(evnPath, f.CfgPath, f.Source, f.TargetDir,
+			f.ReplaceName, f.Format, f.Ratio)
 		err = ctx.InitContext()
 		if nil != err {
 			return
@@ -34,7 +38,9 @@ func (f *CmdFlags) GetContexts() (iconCtx *IconContext, sizeCtc *SizeContext, sc
 	}
 	target, oneByOne := f.getTarget()
 	if ModeSize == f.Mode {
-		ctx := NewSizeContext(evnPath, f.Include, f.Source, target, f.Size, oneByOne, f.Format, f.Ratio)
+		ctx := NewSizeContext(evnPath, oneByOne,
+			f.Source, f.SourceInclude, target, f.TargetSize,
+			f.Format, f.Ratio)
 		err = ctx.InitContext()
 		if nil != err {
 			return
@@ -43,7 +49,9 @@ func (f *CmdFlags) GetContexts() (iconCtx *IconContext, sizeCtc *SizeContext, sc
 		return
 	}
 	if ModeScale == f.Mode {
-		ctx := NewScaleContext(evnPath, f.Include, f.Source, target, f.Scale, oneByOne, f.Format, f.Ratio)
+		ctx := NewScaleContext(evnPath, oneByOne,
+			f.Source, f.SourceInclude, target, f.TargetScale,
+			f.Format, f.Ratio)
 		err = ctx.InitContext()
 		if nil != err {
 			return
@@ -76,27 +84,39 @@ func (f *CmdFlags) getTarget() (target string, oneByOne bool) {
 }
 
 func ParseFlags() *CmdFlags {
-	// 空[执行文件目录]
-	// 绝对路径
-	// 相对于执行目录的相对路径
+	// 【可选】运行时环境路径，支持绝对路径与相对于当前执行目录的相对路径，空表示使用执行文件所在目录
 	envPath := flag.String("env", "", "Running Environment Path! ")
+	// 【必要】执行模式[icon|size|scale]
 	mode := flag.String("mode", "", "Running Mode! ")
-	include := flag.String("include", "", "Included Formats! ")
 
+	// 【icon必要】配置文件路径
 	cfgPath := flag.String("cfg", "", "Mode[icon] config path! ")
+	// 【必要】来源文件或目录，支持多个，可用英文逗号","分隔
 	source := flag.String("src", "", "Mode[scale|size] Source paths! ")
+	// 【size,scale可选】当来源包含目录时必要，扩展名过滤，支持多个，可用英文逗号","分隔
+	sourceInclude := flag.String("include", "", "Included Formats! ")
+	// 【size,scale:File与Dir二选一】【icon必要】产出目录，不支持多个
 	targetDir := flag.String("tar_dir", "", "Mode[scale|size] Target paths! ")
+	// 【size,scale:File与Dir二选一】产出文件
 	targetFile := flag.String("tar_file", "", "Mode[scale|size] Target paths! ")
 
-	size := flag.String("size", "", "Mode[size] Size! ")
-	scale := flag.String("scale", "", "Mode[scale] Scale! ")
+	// 【size必要】产出文件尺寸，支持多个，可用英文逗号","分隔
+	targetSize := flag.String("size", "", "Mode[size] Size! ")
+	// 【scale必要】产出文件比例，支持多个，可用英文逗号","分隔
+	targetScale := flag.String("scale", "", "Mode[scale] Scale! ")
 
+	// 【icon可选】模式下替换名称
+	replaceName := flag.String("name", "", "Mode[icon] Replace Name! ")
+	// 【可选】指定产出文件格式
 	format := flag.String("format", "", "Mode[icon|scale|size] Format! ")
+	// 【可选】指定产出文件质量
 	ratio := flag.Int("ratio", 0, "Mode[icon|scale|size] Ratio! ")
 
 	flag.Parse()
+
 	return &CmdFlags{
-		EnvPath: *envPath, Mode: strings.ToLower(*mode), Include: strings.ToLower(*include),
-		CfgPath: *cfgPath, Source: *source, TargetDir: *targetDir, TargetFile: *targetFile,
-		Size: strings.ToLower(*size), Scale: *scale, Format: strings.ToLower(*format), Ratio: *ratio}
+		EnvPath: *envPath, Mode: strings.ToLower(*mode),
+		CfgPath: *cfgPath, Source: *source, SourceInclude: strings.ToLower(*sourceInclude),
+		TargetDir: *targetDir, TargetFile: *targetFile, TargetSize: strings.ToLower(*targetSize), TargetScale: *targetScale,
+		ReplaceName: *replaceName, Format: strings.ToLower(*format), Ratio: *ratio}
 }

@@ -9,16 +9,9 @@ import (
 )
 
 const (
-	ParamsSep = ","
-)
-
-const (
-	Jpg = "jpg"
-	Png = "png"
-)
-
-const (
-	DefaultRatio = 75
+	ParamsSep          = ","
+	DefaultRatio       = 75
+	IconNameSubstitute = "{{name}}"
 )
 
 type ResizeMode = string

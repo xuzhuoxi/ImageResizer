@@ -10,18 +10,22 @@ import (
 	"strings"
 )
 
-func NewScaleContext(env string, include string, source, target string, scale string, oneByOne bool, format string, ratio int) *ScaleContext {
-	return &ScaleContext{envPath: env, include: include, source: source, target: target, scale: scale, oneByOne: oneByOne,
+func NewScaleContext(env string, oneByOne bool,
+	source string, sourceInclude string, target string, targetScale string,
+	format string, ratio int) *ScaleContext {
+	return &ScaleContext{envPath: env, oneByOne: oneByOne,
+		source: source, sourceInclude: sourceInclude, target: target, targetScale: targetScale,
 		format: format, ratio: ratio}
 }
 
 type ScaleContext struct {
 	envPath  string
-	include  string
-	source   string
-	target   string
-	scale    string
 	oneByOne bool
+
+	source        string
+	sourceInclude string
+	target        string
+	targetScale   string
 
 	format string
 	ratio  int
@@ -83,7 +87,13 @@ func (c *ScaleContext) CheckIncludeFile(filePath string) bool {
 
 func (c *ScaleContext) GetOutPath(source string, targetDir string, scale float64, format string) string {
 	fileName, _, _ := filex.SplitFileName(source)
-	newFileName := fmt.Sprintf("%s@%gx.%s", fileName, scale, formatx.GetExtName(format))
+	newFileName := fileName
+	extName := formatx.GetExtName(format)
+	if len(c.scaleList) > 1 {
+		newFileName = fmt.Sprintf("%s@%gx.%s", fileName, scale, extName)
+	} else {
+		newFileName = fmt.Sprintf("%s.%s", fileName, extName)
+	}
 	return filex.Combine(targetDir, newFileName)
 }
 
@@ -103,7 +113,7 @@ func (c *ScaleContext) InitContext() error {
 }
 
 func (c *ScaleContext) initInclude() {
-	c.subIncludes = strings.Split(c.include, ParamsSep)
+	c.subIncludes = strings.Split(c.sourceInclude, ParamsSep)
 }
 
 func (c *ScaleContext) initSource() error {
@@ -135,10 +145,10 @@ func (c *ScaleContext) initTarget() error {
 }
 
 func (c *ScaleContext) initScale() error {
-	if c.scale == "" {
+	if c.targetScale == "" {
 		return errors.New(fmt.Sprintf("Mode[scale] scale lack! "))
 	}
-	scaleList := strings.Split(c.scale, ParamsSep)
+	scaleList := strings.Split(c.targetScale, ParamsSep)
 	c.scaleList = make([]float64, 0, len(scaleList))
 	for _, v := range scaleList {
 		f, err := strconv.ParseFloat(v, 64)

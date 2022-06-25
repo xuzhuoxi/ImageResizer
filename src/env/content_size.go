@@ -15,25 +15,29 @@ type ImageSize struct {
 	Height uint
 }
 
-func NewSizeContext(env string, include string, source, target string, size string, oneByOne bool, format string, ratio int) *SizeContext {
-	return &SizeContext{envPath: env, include: include, source: source, target: target, size: size, oneByOne: oneByOne,
+func NewSizeContext(env string, oneByOne bool,
+	source string, sourceInclude string, target string, targetSize string,
+	format string, ratio int) *SizeContext {
+	return &SizeContext{envPath: env, oneByOne: oneByOne,
+		source: source, sourceInclude: sourceInclude, target: target, targetSize: targetSize,
 		format: format, ratio: ratio}
 }
 
 type SizeContext struct {
 	envPath  string
-	include  string
-	source   string
-	target   string
-	size     string
 	oneByOne bool
+
+	source        string
+	sourceInclude string
+	target        string
+	targetSize    string
 
 	format string
 	ratio  int
 
-	subIncludes []string
-	sourceList  []string
-	sizeList    []ImageSize
+	subSourceIncludes []string
+	sourceList        []string
+	sizeList          []ImageSize
 }
 
 func (c *SizeContext) String() string {
@@ -83,12 +87,18 @@ func (c *SizeContext) SizeList() []ImageSize {
 }
 
 func (c *SizeContext) CheckIncludeFile(filePath string) bool {
-	return checkFileExt(filePath, c.subIncludes)
+	return checkFileExt(filePath, c.subSourceIncludes)
 }
 
 func (c *SizeContext) GetOutPath(source string, targetDir string, size ImageSize, format string) string {
 	fileName, _, _ := filex.SplitFileName(source)
-	newFileName := fmt.Sprintf("%s@%dx%d.%s", fileName, size.Width, size.Height, formatx.GetExtName(format))
+	newFileName := fileName
+	extName := formatx.GetExtName(format)
+	if len(c.sizeList) > 1 {
+		newFileName = fmt.Sprintf("%s@%dx%d.%s", fileName, size.Width, size.Height, extName)
+	} else {
+		newFileName = fmt.Sprintf("%s.%s", fileName, extName)
+	}
 	return filex.Combine(targetDir, newFileName)
 }
 
@@ -108,7 +118,7 @@ func (c *SizeContext) InitContext() error {
 }
 
 func (c *SizeContext) initInclude() {
-	c.subIncludes = strings.Split(c.include, ParamsSep)
+	c.subSourceIncludes = strings.Split(c.sourceInclude, ParamsSep)
 }
 
 func (c *SizeContext) initSource() error {
@@ -140,10 +150,10 @@ func (c *SizeContext) initTarget() error {
 }
 
 func (c *SizeContext) initSize() error {
-	if c.size == "" {
+	if c.targetSize == "" {
 		return errors.New(fmt.Sprintf("Mode[size] size lack! "))
 	}
-	scaleList := strings.Split(c.size, ParamsSep)
+	scaleList := strings.Split(c.targetSize, ParamsSep)
 	c.sizeList = make([]ImageSize, 0, len(scaleList))
 	for _, v := range scaleList {
 		size, err := c.parseSize(v)
