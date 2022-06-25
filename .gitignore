@@ -14,8 +14,10 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
+!/demo/ImageResizer_darwin_amd64
+!/demo/ImageResizer_win_amd64.exe
 /.idea/
 /build/debian
 /build/release
 /test/
-/res/tar
+/demo/tar

@@ -1,0 +1,50 @@
+default-name: Icon
+format: png
+ratio: 100
+list:
+  # iPhone & iPad
+  - name: '{{name}}-29'
+    size: 29x29
+  - name: '{{name}}-29@2x'
+    size: 58x58
+  - name: '{{name}}-29@3x'
+    size: 87x87
+  # iPhone & iPad
+  - name: '{{name}}-40'
+    size: 40x40
+  - name: '{{name}}-40@2x'
+    size: 80x80
+  - name: '{{name}}-40@3x'
+    size: 120x120
+  # iPad
+  - name: '{{name}}-50'
+    size: 50x50
+  - name: '{{name}}-50@2x'
+    size: 100x100
+  # iPhone
+  - name: '{{name}}-57'
+    size: 57x57
+  - name: '{{name}}-57@2x'
+    size: 114x114
+  - name: '{{name}}-57@3x'
+    size: 171x171
+  # iPhone
+  - name: '{{name}}-60'
+    size: 60x60
+  - name: '{{name}}-60@2x'
+    size: 120x120
+  - name: '{{name}}-60@3x'
+    size: 180x180
+  # iPad
+  - name: '{{name}}-72'
+    size: 70x72
+  - name: '{{name}}-72@2x'
+    size: 144x144
+  # iPad
+  - name: '{{name}}-76'
+    size: 76x76
+  - name: '{{name}}-76@2x'
+    size: 152x152
+  # iPad
+  - name: '{{name}}-83.5@2x'
+    size: 167x167
