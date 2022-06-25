@@ -26,9 +26,12 @@ You can choose [Download Release Version](#p2.1) or [Construction](#p2.2) to get
 - Build
 
   + The construction depends on the third-party library [goxc](https://github.com/laher/goxc).
+
   + If necessary, you can modify the relevant construction scripts.
+
   + It is recommended to turn off gomod first: `go env -w GO111MODULE=off`, because goxc is old.
-  + Execute the build script ([goxc_build.sh](/build/goxc_build.sh) or ([goxc_build.bat](/build/goxc_build.bat), the executable file will be generated in the [release](/build/release) directory .
+
+  + Execute the build script [goxc_build.sh](/build/goxc_build.sh) or [goxc_build.bat](/build/goxc_build.bat), the executable file will be generated in the "build/release" directory .
 
 ## <span id="p3">Run
 
@@ -87,14 +90,16 @@ The tool supports command line execution only.
 
 ### <span id="p3.2">Example Of Application Scenarios
 
-**Note**: The following uses `$EnvPath` instead of implementing the environment path
+**Note**: The following uses `$EnvPath` instead of the actual environment path.
 
 - Mode "icon" application scenarios:
 
   + icon profile description:
   
 	1. The configuration file is in ymal format.
+
 	2. Configuration file description and corresponding structure:
+
 		```golang
 		type IconSize struct {
 			Name string `yaml:"name"` // file path
@@ -107,11 +112,17 @@ The tool supports command line execution only.
 			List        []IconSize `yaml:"list"`            // size
 		}
 		```
+
 	  - default-name: the default name to use when the -name parameter is not used
+
 	  - default-format: The format parameter used by default when the -format parameter is not used, and the format of the source image is used when the empty string is filled
+
 	  - default-ratio: The quality parameter used by default when the -ratio parameter is not used. Filling in 0 means using the tool's default parameter of 85.
+
 	  - name: file path, **do not need to fill in the extension**, supports the replacement parameter of "{{name}}".
+
 	  - size: image size, format: "length"x"width"
+
 	3. For example, please refer to [icon_ios.yaml](/demo/icon_ios.yaml)
 
   + Generate iOS app icon and specify file name prefix

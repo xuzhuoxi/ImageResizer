@@ -26,9 +26,12 @@ go1.16
 - 构造
 
   + 构造依赖到第三方库[goxc](https://github.com/laher/goxc)。
+
   + 如有必要，你可以修改相关构造脚本。
+
   + 建议先关闭gomod：`go env -w GO111MODULE=off`，由于goxc已经比较旧。
-  + 执行构造脚本([goxc_build.sh](/build/goxc_build.sh)或([goxc_build.bat](/build/goxc_build.bat),执行文件将生成在[release](/build/release)目录中。
+
+  + 执行构造脚本[goxc_build.sh](/build/goxc_build.sh)或[goxc_build.bat](/build/goxc_build.bat),执行文件将生成在"build/release"目录中。
 
 ## <span id="p3">运行
 
@@ -87,14 +90,16 @@ go1.16
 
 ### <span id="p3.2">应用场景举例
 
-**注意**：以下使用`$EnvPath`代替实现环境路径
+**注意**：以下使用`$EnvPath`代替实际环境路径。
 
 - 模式"icon"应用场景：
 
   + icon配置文件说明：
   
 	1. 配置文件使用ymal格式。
+
 	2. 配置文件说明及相应结构：
+
 		```golang
 		type IconSize struct {
 			Name string `yaml:"name"` // 文件路径
@@ -107,11 +112,17 @@ go1.16
 			List        []IconSize `yaml:"list"`           // 尺寸
 		}
 		```
+
 	  - default-name: 在未使用-name参数时默认使用的名称
+
 	  - default-format: 在未使用-format参数时默认使用的格式参数，填空字符串时表示使用源图像的格式
+
 	  - default-ratio: 在未使用-ratio参数时默认使用的品质参数，填0时表示使用工具默认的参数85.
+
 	  - name: 文件路径，**不用填扩展名**，支持“{{name}}”的替换参数。
+
 	  - size: 图像尺寸，格式:长x宽
+
 	3. 例子可参考[icon_ios.yaml](/demo/icon_ios.yaml)
 
   + 生成iOS应用图标,并指定文件名称前缀
@@ -146,8 +157,11 @@ go1.16
 ### <span id="p3.3">例子
 
 - 例子目录位于[demo](/demo).
+
 - Win64平台可执行[run_icon.bat](/demo/run_icon.bat),[run_scale.bat](/demo/run_scale.bat),[run_size.bat](/demo/run_size.bat)进行测试。
+
 - Mac平台可执行[run_icon.sh](/demo/run_icon.sh),[run_scale.sh](/demo/run_scale.sh),[run_size.sh](/demo/run_size.sh)进行测试。
+
 - Linux平台修改Mac测试脚本中的执行文件路径进行测试。
 
   [命令行参数说明](#p3.1)
