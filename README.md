@@ -1,95 +1,167 @@
-# IconGen
-IconGen can be used to Generate icons of different sizes or reduce image size.
+# ImageResizer
+ImageResizer 主要用于生成不同尺寸的图像.
 
-## Compatibility
-go1.11
+## 兼容性
+go1.16
 
-## Getting Started
+## 如何开始
 
-### Download Release
+你可以选择[下载发行版本](#下载发行版本)或者[构造](#构造)获得执行文件
 
-- Download the release [here](https://github.com/xuzhuoxi/IconGen/releases).
+### 下载发行版本
 
-- Download the repository:
+- 到以下地址下载: [https://github.com/xuzhuoxi/ImageResizer/releases](https://github.com/xuzhuoxi/ImageResizer/releases).
+
+### 构造
+
+- 下载仓库
 
 	```sh
-	go get -u github.com/xuzhuoxi/IconGen
+	go get -u github.com/xuzhuoxi/ImageResizer
 	```
-	
-	This will retrieve the library.
 
-### Build
+- 构造
 
-Execution the construction file([build.sh](/build/build.sh)) to get the releases if you have already downloaded the repository.
+  + 构造依赖到第三方库[goxc](https://github.com/laher/goxc)。
+  + 如有必要，你可以修改相关构造脚本。
+  + 建议先关闭gomod：`go env -w GO111MODULE=off`，由于goxc已经比较旧
+  + 执行构造脚本([goxc_build.sh](/build/goxc_build.sh)或([goxc_build.bat](/build/goxc_build.bat),执行文件将生成在[release](/build/release)目录中。
 
-You can modify the construction file([build.sh](/build/build.sh)) to achieve what you want if necessary. The command line description is [here](https://github.com/laher/goxc).
+## 运行
 
-## Run
+工具仅支持命令行执行。
 
-### Demo
+### 命令行参数说明
 
-[Here](/demo/win) is a running demo for windows 64bit platform.
+  - -env 
+    + 【可选】运行时环境路径，支持绝对路径与相对于当前执行目录的相对路径，空表示使用执行文件所在目录
+    + 例如: 
+      -env=D:/workspaces
+  - -mode
+    + 【必要】执行模式[icon|size|scale]
+    + 例如: 
+      -mode=icon
+  - -cfg
+    + 【icon必要】配置文件路径
+    + 例如: 
+      -cfg=D:/workspaces/icon_ios.yaml
+  - -src
+    + 【必要】来源文件或目录，支持多个，可用英文逗号","分隔
+    + 例如: 
+      -src=D:/workspaces/IconDir,D:/workspaces/Icon.png
+  - -include
+    + 【size,scale可选】当来源包含目录时必要，扩展名过滤，支持多个，可用英文逗号","分隔
+    + 例如:
+      -include=jpg,png
+  - -tar_dir
+    + 【size,scale:File与Dir二选一】【icon必要】产出目录，不支持多个
+    + 例如:
+      -tar_dir=D:/workspaces/OutDir
+  - -tar_file
+    + 【size,scale:File与Dir二选一】产出文件
+    + 例如:
+      -tar_file=D:/workspaces/OutDir/IconNew.png
+  - -size
+    + 【size必要】产出文件尺寸，支持多个，可用英文逗号","分隔
+    + 例如:
+      -size=512,48x32
+  - -scale
+    + 【scale必要】产出文件比例，支持多个，可用英文逗号","分隔
+    + 例如:
+      -scale=0.8,1,1.5
+  - -name
+    + 【icon可选】模式下替换名称
+    + 例如:
+      -name=IconNew 
+  - -format
+    + 【可选】指定产出文件格式
+    + 例如:
+      -format=jpg
+  - -ratio
+    + 【可选】指定产出文件质量
+    + 例如:
+      -ratio=65
 
-[Here](/demo/macOS) is a running demo for MacOS platform.
+### 实际应用
 
-The running command is consistent of all platforms.
+**注意**：以下使用`$EnvPath`代替实现环境路径
 
-Goto <a href="#command-line">Command Line Description</a>.
+- 模式"icon"应用场景：
 
-### Command Line
+  + icon配置文件说明：
+  
+	1. 配置文件使用ymal格式。
+	2. 配置文件说明及相应结构：
+		```golang
+		type IconSize struct {
+			Name string `yaml:"name"` // 文件路径
+			Size string `yaml:"size"` // 尺寸,格式: 长x宽
+		}
+		type IconCfg struct {
+			DefaultName string     `yaml:"default-name"`   // 默认名称，用于替换"{{name}}"中内容
+			Format      string     `yaml:"default-format"` // 文件格式，空的时候读取源文件扩展名格式
+			Ratio       int        `yaml:"default-ratio"`  // 品质压缩率
+			List        []IconSize `yaml:"list"`           // 尺寸
+		}
+		```
+	  - default-name: 在未使用-name参数时默认使用的名称
+	  - default-format: 在未使用-format参数时默认使用的格式参数，填空字符串时表示使用源图像的格式
+	  - default-ratio: 在未使用-ratio参数时默认使用的品质参数，填0时表示使用工具默认的参数85.
+	  - name: 文件路径，**不用填扩展名**，支持“{{name}}”的替换参数。
+	  - size: 图像尺寸，格式:长x宽
+	3. 例子可参考[icon_ios.yaml](/demo/icon_ios.yaml)
 
-Supportted command line parameters as follow:
+  + 生成iOS应用图标,并指定文件名称前缀
 
-| -       | -            | -                                                            |
-| :------ | :----------- | ------------------------------------------------------------ |
-| -size   | **required** | The size of the generated image.                             |
-| -base   | optional     | Custom base running folder for each path in the command. Use Execution file directory if no setting. |
-| -in     | optional     | Custom source folder or file. Use -base value if no setting. |
-| -inFolder     | optional     | true: -in is folder path. false: -in is file path. |
-| -out    | optional     | Custom output folder. Use -base value if no setting.         |
-| -outFolder     | optional     | true: -out is folder path. false: -out is file path. |
-| -format | optional     | The format of the generated image. Supported as follows: png, jpg, jpeg, jps |
-| -ratio  | optional     | The quality of the generated image. Supported for jpg,jpeg,jps. |
+	命令行：
+    `ImageResizer -env=$EnvPath -mode=icon -cfg=icon_ios.yaml -src=src/SrcIcon.png -tar_dir=tar -name=AppIcon`
 
-E.g.:
+- 模式"size"应用场景：
 
--size=128,256
+  + 调整指定图像大小,并指定格式与质量
 
--size=128,256x256
+    命令行：
+    `ImageResizer -env=$EnvPath -mode=size -src=src/SrcIcon.png -tar_file=tar/SrcIcon.png -size=512x512 -format=jpg -ratio=65`
 
--base=/
+  + 批量调整目录中的png图像到多种大小
 
--in=./source
+    命令行：
+    `ImageResizer -env=$EnvPath -mode=size -src=src -include=png -tar_dir=tar, -size=512,256x256`
 
--in=./source/icon.png
+- 模式"scale"应用场景：
 
--inFolder=true
+  + 调整指定图像比例
 
--out=c:/image/ouput
+    命令行：
+    `ImageResizer -env=$EnvPath -mode=scale -src=src/SrcIcon.png -tar_file=tar/SrcIcon.png -scale=0.5`
 
--out=c:/image/ouput/b.jpeg
+  + 批量调整目录中的jpg图像到多种比例,并指定格式与质量
 
--outFolder=false
+    命令行：
+    `ImageResizer -env=$EnvPath -mode=scale -src=src -include=png -tar_dir=tar, -scale=0.6,1.2 -foramt=png -ratio=85`
 
--format=jpeg
+### 例子
 
--format=jpg,png
+- 例子目录位于[demo](/demo).
+- Win64平台可执行[run_icon.bat](/demo/run_icon.bat),[run_scale.bat](/demo/run_scale.bat),[run_size.bat](/demo/run_size.bat)进行测试。
+- Mac平台可执行[run_icon.sh](/demo/run_icon.sh),[run_scale.sh](/demo/run_scale.sh),[run_size.sh](/demo/run_size.sh)进行测试。
+- Linux平台修改Mac测试脚本中的执行文件路径进行测试。
 
--ratio=70
+  [命令行参数说明](#命令行参数说明)
 
-## Related Library
+## 依赖库
 
 - infra-go [https://github.com/xuzhuoxi/infra-go](https://github.com/xuzhuoxi/infra-go)
 
 - goxc [https://github.com/laher/goxc](https://github.com/laher/goxc) 
 
-## Contact
+## 联系作者
 
 xuzhuoxi 
 
 <xuzhuoxi@gmail.com> or <mailxuzhuoxi@163.com>
 
 ## License
-IconGen source code is available under the MIT [License](/LICENSE).
+ImageResizer source code is available under the MIT [License](/LICENSE).
 
 

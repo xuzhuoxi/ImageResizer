@@ -16,6 +16,7 @@
 
 !/demo/ImageResizer_darwin_amd64
 !/demo/ImageResizer_win_amd64.exe
+!/demo/ImageResizer_linux_amd64
 /.idea/
 /build/debian
 /build/release

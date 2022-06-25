@@ -1,6 +1,6 @@
 default-name: Icon
-format: png
-ratio: 100
+default-format: png
+default-ratio: 85
 list:
   # iPhone & iPad
   - name: '{{name}}-29'

@@ -45,10 +45,10 @@ func (s *IconSize) initSize() {
 }
 
 type IconCfg struct {
-	DefaultName string     `yaml:"default-name"` // 默认名称，用于替换"{{name}}"中内容
-	Format      string     `yaml:"format"`       // 文件格式，空的时候读取源文件扩展名格式
-	Ratio       int        `yaml:"ratio"`        // 品质压缩率
-	List        []IconSize `yaml:"list"`         // 尺寸
+	DefaultName string     `yaml:"default-name"`   // 默认名称，用于替换"{{name}}"中内容
+	Format      string     `yaml:"default-format"` // 文件格式，空的时候读取源文件扩展名格式
+	Ratio       int        `yaml:"default-ratio"`  // 品质压缩率
+	List        []IconSize `yaml:"list"`           // 尺寸
 }
 
 func (i *IconCfg) String() string {
