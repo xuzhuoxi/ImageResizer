@@ -1,6 +1,6 @@
-## Release notes
+## Release Notes
 
-### Known Issues in v1.0.0
+### Known Issues
 
 ### Improvements
 
@@ -10,12 +10,12 @@
 
 ### Fixes
 
-## Library changes in v1.0.0
+## Library Changes
 
-### library updated
+### library Updated
 
 #### Updated
 
-#### No longer available
+#### No Longer Available
 
 #### Added

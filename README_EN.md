@@ -4,6 +4,8 @@ ImageResizer is mainly used to generate images of different sizes.
 
 [中文](/README.md) | English
 
+**Note：** This document is provided with translations based on [Google Translate](https://translate.google.cn/).
+
 ## <span id="p1">Compatibility
 go1.16
 
