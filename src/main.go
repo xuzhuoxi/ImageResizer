@@ -9,10 +9,13 @@ import (
 	"github.com/xuzhuoxi/ImageResizer/src/core"
 	"github.com/xuzhuoxi/ImageResizer/src/env"
 	"github.com/xuzhuoxi/infra-go/logx"
+	"github.com/xuzhuoxi/infra-go/mathx"
+	"github.com/xuzhuoxi/infra-go/osxu"
 )
 
 var (
 	globalLogger logx.ILogger
+	logFileName  = "ImageResizer"
 )
 
 func main() {
@@ -31,6 +34,7 @@ func main() {
 func initLogger() {
 	globalLogger = logx.NewLogger()
 	globalLogger.SetConfig(logx.LogConfig{Type: logx.TypeConsole, Level: logx.LevelAll})
-	globalLogger.SetConfig(logx.LogConfig{Type: logx.TypeRollingFile, Level: logx.LevelAll})
+	globalLogger.SetConfig(logx.LogConfig{Type: logx.TypeRollingFile, Level: logx.LevelAll,
+		FileDir: osxu.GetRunningDir(), FileName: logFileName, FileExtName: ".log", MaxSize: 10 * mathx.MB})
 	core.RegisterLogger(globalLogger)
 }
